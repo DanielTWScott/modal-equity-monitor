@@ -58,7 +58,7 @@ def fetch_and_save_prices():
         file_path = f"/outputs/equity_monitor_report_{today_str}.csv"
 
     df.to_csv(file_path, index=False)
-    print(f"✅ Report saved to {file_path}")
+    print(f"Report saved to {file_path}")
 
 # Local test
 if __name__ == "__main__":
