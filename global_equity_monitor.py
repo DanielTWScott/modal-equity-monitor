@@ -4,13 +4,13 @@ import pandas as pd
 from datetime import datetime
 import os
 
-# Create a Modal app (instead of stub)
+# Create Modal app
 app = modal.App(
     "global-equity-price-monitor",
     volumes={"/outputs": modal.Volume.from_name("equity-monitor-outputs", create_if_missing=True)}
 )
 
-# Define your top tickers
+# Define tickers
 SP100_TOP10 = ["AAPL", "MSFT", "AMZN", "GOOGL", "META", "NVDA", "BRK-B", "UNH", "TSLA", "JNJ"]
 FTSE100_TOP10 = ["SHEL.L", "HSBA.L", "AZN.L", "GSK.L", "ULVR.L", "BP.L", "DGE.L", "BATS.L", "RIO.L", "GLEN.L"]
 SP5002_TOP10 = ["AVGO", "COST", "WMT", "PG", "XOM", "LLY", "JPM", "V", "HD", "MA"]
@@ -19,7 +19,7 @@ ALL_STOCKS = SP100_TOP10 + FTSE100_TOP10 + SP5002_TOP10
 
 @app.function(schedule=modal.Period(hours=24))
 def fetch_and_save_prices():
-    # Download last 5 years of stock data
+    # Download last 5 years of closing prices
     data = yf.download(ALL_STOCKS, period="5y", interval="1d", group_by="ticker", auto_adjust=True, threads=True)
 
     report_rows = []
@@ -49,7 +49,7 @@ def fetch_and_save_prices():
     df = pd.DataFrame(report_rows)
     today_str = datetime.now().strftime("%Y-%m-%d")
 
-    # Decide path based on environment (local vs Modal cloud)
+    # Decide path based on environment
     if modal.is_local():
         output_folder = "outputs"
         os.makedirs(output_folder, exist_ok=True)
